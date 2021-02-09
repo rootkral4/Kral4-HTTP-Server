@@ -3,6 +3,6 @@ Python http server
 
 ## DO NOT USE THIS SERVER IT CONTAINS EXPLOIT
 
-this repo created for ctf
+this repo created for capture the flag
 
 
