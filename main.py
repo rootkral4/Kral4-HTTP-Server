@@ -11,7 +11,7 @@ plist = []
 response_codes = {
         "200": "HTTP/1.0 200 OK\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n",
         "400": "HTTP/1.0 400 Bad request\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>400 Bad request</h1>Your browser sent an invalid request.</body></html>",
-        "404": "HTTP/1.0 404 Not Found\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>404 Not Found</h1>YThe requested file or directory is not exist</body></html>",
+        "404": "HTTP/1.0 404 Not Found\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>404 Not Found</h1>The requested file or directory is not exist\nhttps://github.com/rootkral4/Kral4-HTTP-Server</body></html>",
         "500": "HTTP/1.0 500 Internal Server Error\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>500 Internal Server Error</h1>Server ran into a problem :(</body></html>",
         "503": "HTTP/1.0 503 Service Unavailable\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>503 Service Unavailable</h1>There is a problem with server</body></html>"
     }
