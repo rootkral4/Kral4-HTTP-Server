@@ -63,10 +63,10 @@ def preparefileandrespond(filepath, c):
         isindexhtml = os.path.isfile(root_dir + "index.html")
         isindexphp  = os.path.isfile(root_dir + "index.php")
         if isindexhtml == True:
-            with open(root_dir + "index.html") as f:
+            with open(root_dir + "index.html", "rb") as f:
                 filecontent = f.read()
-            finalresponse = response_codes["200"] + filecontent
-            c.sendall(finalresponse.encode())
+            finalresponse = response_codes["200"].encode() + filecontent
+            c.sendall(finalresponse))
             closesocket(c)
         elif isindexphp == True:
             if enable_php != 1:
@@ -97,10 +97,10 @@ def preparefileandrespond(filepath, c):
             isindexhtml = os.path.isfile(root_dir + "index.html")
             isindexphp  = os.path.isfile(root_dir + "index.php")
             if isindexhtml == True:
-                with open(root_dir + "index.html") as f:
+                with open(root_dir + "index.html", "rb") as f:
                     filecontent = f.read()
-                finalresponse = response_codes["200"] + filecontent
-                c.sendall(finalresponse.encode())
+                finalresponse = response_codes["200"].encode() + filecontent
+                c.sendall(finalresponse)
                 closesocket(c)
             elif isindexphp == True:
                 if enable_php != 1:
@@ -137,16 +137,16 @@ def preparefileandrespond(filepath, c):
                         c.sendall(finalresponse.encode())
                         closesocket(c)
                 else:
-                    with open(root_dir + filepath, "r") as f:
+                    with open(root_dir + filepath, "rb") as f:
                         filecontent = f.read()
-                    finalresponse = response_codes["200"] + filecontent
-                    c.sendall(finalresponse.encode())
+                    finalresponse = response_codes["200"].encode() + filecontent
+                    c.sendall(finalresponse)
                     closesocket(c)
             else:
-                with open(root_dir + filepath, "r") as f:
+                with open(root_dir + filepath, "rb") as f:
                     filecontent = f.read()
-                finalresponse = response_codes["200"] + filecontent
-                c.sendall(finalresponse.encode())
+                finalresponse = response_codes["200"].encode() + filecontent
+                c.sendall(finalresponse)
                 closesocket(c)
         else:
             #even if isdir or isfile returns false try this, i made here quickly may contain bugs
@@ -162,10 +162,10 @@ def preparefileandrespond(filepath, c):
                         c.sendall(finalresponse.encode())
                         closesocket(c)
                 else:
-                    with open(root_dir + filepath, "r") as f:
+                    with open(root_dir + filepath, "rb") as f:
                         filecontent = f.read()
-                    finalresponse = response_codes["200"] + filecontent
-                    c.sendall(finalresponse.encode())
+                    finalresponse = response_codes["200"].encode() + filecontent
+                    c.sendall(finalresponse))
                     closesocket(c)
             except:
                 c.sendall(response_codes["404"].encode())
