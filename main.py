@@ -195,6 +195,7 @@ def processandrespond(c, data):
             user_agent     = useragentline[1]
     if request_method and request_path and http_version and user_agent != "":
         print(request_method, request_path, http_version, user_agent)
+        request_path = request_path.replace("%20", " ")
         preparefileandrespond(request_path, c)
     else:
         c.sendall(response_codes['400'].encode())
