@@ -3,6 +3,7 @@ import multiprocessing
 import atexit
 import os
 import datetime
+from urllib.parse import unquote
 
 clist = []
 addrlist = []
@@ -148,23 +149,15 @@ def preparefileandrespond(filepath, c):
                 c.sendall(finalresponse.encode())
                 closesocket(c)
         else:
-            #even if isdir or isfile returns false try this
+            #even if isdir or isfile returns false try this, i made here quickly may contain bugs
             try:
-                if "." in filepath:
-                    fileext = filepath.split(".")
-                    if "php" in fileext[-1]:
-                        if enable_php != 1:
-                            print("enable_php off canceling request")
-                            c.sendall(response_codes["403"].encode())
-                            closesocket(c)
-                        else:
-                            filecontent = callphp(root_dir + filepath)
-                            finalresponse = response_codes["200"] + filecontent
-                            c.sendall(finalresponse.encode())
-                            closesocket(c)
+                if "php" in filepath:
+                    if enable_php != 1:
+                        print("enable_php off canceling request")
+                        c.sendall(response_codes["403"].encode())
+                        closesocket(c)
                     else:
-                        with open(root_dir + filepath, "r") as f:
-                            filecontent = f.read()
+                        filecontent = callphp(root_dir + filepath)
                         finalresponse = response_codes["200"] + filecontent
                         c.sendall(finalresponse.encode())
                         closesocket(c)
@@ -175,7 +168,7 @@ def preparefileandrespond(filepath, c):
                     c.sendall(finalresponse.encode())
                     closesocket(c)
             except:
-                c.sendall(response_codes["500"].encode())
+                c.sendall(response_codes["404"].encode())
                 closesocket(c)
 
 def processandrespond(c, data):
@@ -194,8 +187,8 @@ def processandrespond(c, data):
             useragentline  = d.decode().split("User-Agent:")
             user_agent     = useragentline[1]
     if request_method and request_path and http_version and user_agent != "":
+        request_path = unquote(request_path)
         print(request_method, request_path, http_version, user_agent)
-        request_path = request_path.replace("%20", " ")
         preparefileandrespond(request_path, c)
     else:
         c.sendall(response_codes['400'].encode())
