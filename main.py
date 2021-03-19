@@ -3,7 +3,7 @@ import multiprocessing
 import atexit
 import os
 import datetime
-from urllib.parse import unquote
+import subprocess
 
 clist = []
 addrlist = []
@@ -11,7 +11,7 @@ plist = []
 response_codes = {
         "200": "HTTP/1.0 200 OK\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n",
         "400": "HTTP/1.0 400 Bad request\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>400 Bad request</h1>Your browser sent an invalid request.</body></html>",
-        "404": "HTTP/1.0 404 Not Found\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>404 Not Found</h1>The requested file or directory is not exist\nhttps://github.com/rootkral4/Kral4-HTTP-Server</body></html>",
+        "404": "HTTP/1.0 404 Not Found\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>404 Not Found</h1>YThe requested file or directory is not exist</body></html>",
         "500": "HTTP/1.0 500 Internal Server Error\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>500 Internal Server Error</h1>Server ran into a problem :(</body></html>",
         "503": "HTTP/1.0 503 Service Unavailable\nCache-Control: no-cache\nServer:kral4 http server\nConnection: close\nContent-Type: text/html\n\n<html><body><h1>503 Service Unavailable</h1>There is a problem with server</body></html>"
     }
@@ -46,8 +46,9 @@ def closesocket(sock):
 def callphp(filepath):
     last = b""
     config = getconfig()
-    result = os.popen(config[2] + " -f " + filepath).read()
-    return result
+    result = subprocess.Popen([config[2], "-f", filepath], stdout=subprocess.PIPE)
+    out, err = result.communicate()
+    return out.decode()
 
 def killthreads():
     global plist
@@ -63,10 +64,10 @@ def preparefileandrespond(filepath, c):
         isindexhtml = os.path.isfile(root_dir + "index.html")
         isindexphp  = os.path.isfile(root_dir + "index.php")
         if isindexhtml == True:
-            with open(root_dir + "index.html", "rb") as f:
+            with open(root_dir + "index.html") as f:
                 filecontent = f.read()
-            finalresponse = response_codes["200"].encode() + filecontent
-            c.sendall(finalresponse))
+            finalresponse = response_codes["200"] + filecontent
+            c.sendall(finalresponse.encode())
             closesocket(c)
         elif isindexphp == True:
             if enable_php != 1:
@@ -97,10 +98,10 @@ def preparefileandrespond(filepath, c):
             isindexhtml = os.path.isfile(root_dir + "index.html")
             isindexphp  = os.path.isfile(root_dir + "index.php")
             if isindexhtml == True:
-                with open(root_dir + "index.html", "rb") as f:
+                with open(root_dir + "index.html") as f:
                     filecontent = f.read()
-                finalresponse = response_codes["200"].encode() + filecontent
-                c.sendall(finalresponse)
+                finalresponse = response_codes["200"] + filecontent
+                c.sendall(finalresponse.encode())
                 closesocket(c)
             elif isindexphp == True:
                 if enable_php != 1:
@@ -137,39 +138,20 @@ def preparefileandrespond(filepath, c):
                         c.sendall(finalresponse.encode())
                         closesocket(c)
                 else:
-                    with open(root_dir + filepath, "rb") as f:
+                    with open(root_dir + filepath, "r") as f:
                         filecontent = f.read()
-                    finalresponse = response_codes["200"].encode() + filecontent
-                    c.sendall(finalresponse)
+                    finalresponse = response_codes["200"] + filecontent
+                    c.sendall(finalresponse.encode())
                     closesocket(c)
             else:
-                with open(root_dir + filepath, "rb") as f:
+                with open(root_dir + filepath, "r") as f:
                     filecontent = f.read()
-                finalresponse = response_codes["200"].encode() + filecontent
-                c.sendall(finalresponse)
+                finalresponse = response_codes["200"] + filecontent
+                c.sendall(finalresponse.encode())
                 closesocket(c)
         else:
-            #even if isdir or isfile returns false try this, i made here quickly may contain bugs
-            try:
-                if "php" in filepath:
-                    if enable_php != 1:
-                        print("enable_php off canceling request")
-                        c.sendall(response_codes["403"].encode())
-                        closesocket(c)
-                    else:
-                        filecontent = callphp(root_dir + filepath)
-                        finalresponse = response_codes["200"] + filecontent
-                        c.sendall(finalresponse.encode())
-                        closesocket(c)
-                else:
-                    with open(root_dir + filepath, "rb") as f:
-                        filecontent = f.read()
-                    finalresponse = response_codes["200"].encode() + filecontent
-                    c.sendall(finalresponse))
-                    closesocket(c)
-            except:
-                c.sendall(response_codes["404"].encode())
-                closesocket(c)
+            c.sendall(response_codes["404"].encode())
+            closesocket(c)
 
 def processandrespond(c, data):
     global response_codes
@@ -187,7 +169,6 @@ def processandrespond(c, data):
             useragentline  = d.decode().split("User-Agent:")
             user_agent     = useragentline[1]
     if request_method and request_path and http_version and user_agent != "":
-        request_path = unquote(request_path)
         print(request_method, request_path, http_version, user_agent)
         preparefileandrespond(request_path, c)
     else:
